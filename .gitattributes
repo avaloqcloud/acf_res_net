@@ -1,0 +1,2 @@
+# Set the default behavior, in case people don't have core.autocrlf set for normalizing data on commit
+* text=auto
