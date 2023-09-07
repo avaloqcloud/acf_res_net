@@ -13,7 +13,7 @@ variable "settings" {
     compartment_id = string,
     name           = string,
     description    = string,
-    cidr           = string,
+    cidr_blocks    = list(sting),
   })
   description = "Configuration parameter from the active oci account"
 }
@@ -23,7 +23,5 @@ resource "oci_core_vcn" "these" {
   compartment_id = var.settings.compartment_id
   display_name   = var.settings.name
   dns_label      = var.settings.name
-  cidr           = var.settings.cidr
-  
-  depends_on = [ module.configuration ]
+  cidr_blocks    = var.settings.cidr_blocks
 }
