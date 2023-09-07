@@ -13,7 +13,7 @@ variable "settings" {
     compartment_id = string,
     name           = string,
     description    = string,
-    cidr_blocks    = list(sting),
+    cidr_blocks    = list(string),
   })
   description = "Configuration parameter from the active oci account"
 }
