@@ -8,12 +8,22 @@
 #   depends_on = [ module.configuration ]
 # }s
 
+variable "setting" {
+  type = object({
+    compartment_id = string,
+    name           = string,
+    description    = string,
+    cidr           = string,
+  })
+  description = "Configuration parameter from the active oci account"
+}
 
 # Create VCNs
 resource "oci_core_vcn" "these" {
-  compartment_id = configuration.oci_core_vcn.zone_private.compartment_id
-  display_name = configuration.oci_core_vcn.zone_private.name
-  dns_label = configuration.oci_core_vcn.zone_private.name
+  compartment_id = var.settings.compartment_id
+  display_name   = var.settings.name
+  dns_label      = var.settings.name
+  cidr           = var.settings.cidr
   
   depends_on = [ module.configuration ]
 }
