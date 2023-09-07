@@ -11,9 +11,9 @@
 
 # Create VCNs
 resource "oci_core_vcn" "these" {
-  compartment_id = module.configuration.setting.compartment_id
-  display_name = lower("${moduel.configuration.setting.name}_vcn")
-  dns_label = lower("${moduel.configuration.setting.name}")
+  compartment_id = configuration.oci_core_vcn.zone_private.compartment_id
+  display_name = configuration.oci_core_vcn.zone_private.name
+  dns_label = configuration.oci_core_vcn.zone_private.name
   
   depends_on = [ module.configuration ]
 }
