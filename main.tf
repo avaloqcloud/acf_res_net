@@ -8,7 +8,7 @@
 #   depends_on = [ module.configuration ]
 # }s
 
-variable "setting" {
+variable "settings" {
   type = object({
     compartment_id = string,
     name           = string,
