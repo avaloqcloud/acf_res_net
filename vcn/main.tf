@@ -126,7 +126,7 @@ resource "oci_core_local_peering_gateway" "these" {
   vcn_id         = lookup(oci_core_vcn.these, each.value.vcn_name).id
   #Optional
   display_name = "${each.value.vcn_name}_local_peering_gateway"
-  /*peer_id = each.value.local_peering_gateway.peer_id*/ #Enalbe only if the 'peer_id' is known and the counterpart is ready for peering
+  peer_id = each.value.local_peering_gateway.peer_id == "" ? null : each.value.local_peering_gateway.peer_id
 }
 
 ## Route tables
