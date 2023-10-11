@@ -20,6 +20,11 @@ variable "ports_not_allowed_from_anywhere_cidr" {
   default     = [22, 3389]
 }
 
+variable "dns_resolver_view" {
+  description = "Attache DNS view to resolver"
+  type        = string
+}
+
 variable "vcns" {
   type = list(object({
     vcn_name     = string,

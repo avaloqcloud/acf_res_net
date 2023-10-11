@@ -126,7 +126,7 @@ resource "oci_core_local_peering_gateway" "these" {
   vcn_id         = lookup(oci_core_vcn.these, each.value.vcn_name).id
   #Optional
   display_name = "${each.value.vcn_name}_local_peering_gateway"
-  /*peer_id = each.value.local_peering_gateway.peer_id*/ #Enalbe only if the 'peer_id' is known and the counterpart is ready for peering
+  peer_id = each.value.local_peering_gateway.peer_id == "" ? null : each.value.local_peering_gateway.peer_id
 }
 
 ## Route tables
@@ -959,9 +959,18 @@ resource "oci_dns_resolver" "these" {
   }
   resolver_id = lookup(data.oci_core_vcn_dns_resolver_association.dns_resolver_association, "${each.value.vcn_name}_${each.value.dns_label}").dns_resolver_id
   scope       = "PRIVATE"
-  #  attached_views {
-  #    view_id = data.oci_dns_views.these.views[0].id # TODO: needs to be checked if needed or not
-  #  }
+     dynamic "attached_views" {
+      iterator = views
+      for_each = [
+        for x in [var.dns_resolver_view] : 
+        {
+          view_id = x
+        } if x != ""
+      ]
+      content {
+        view_id = views.value.view_id
+      }
+     }
   display_name = "${each.value.vcn_name}_dns_resolver"
   dynamic "rules" {
     iterator = domain_names

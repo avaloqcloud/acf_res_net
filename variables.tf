@@ -3,6 +3,11 @@ variable "compartment_id" {
   type        = string
 }
 
+variable "dns_resolver_view" {
+  description = "Attache DNS view to resolver"
+  type        = string
+}
+
 variable "vcns" {
   type = list(object({
     vcn_name     = string,
