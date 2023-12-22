@@ -887,7 +887,7 @@ resource "oci_core_security_list" "these" {
       description      = sgw_target.value.description
       stateless        = false
       destination_type = "SERVICE_CIDR_BLOCK"
-      destination      = "all-zrh-services-in-oracle-services-network" #TODO: Get value from resource
+      destination      = data.oci_core_services.all_services.services[0].cidr_block
       protocol         = "6"
 
       tcp_options {
