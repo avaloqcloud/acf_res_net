@@ -28,6 +28,11 @@ locals {
 
 # Provides the list of Services in OCI
 data "oci_core_services" "all_services" {
+  filter {
+    name   = "name"
+    values = ["All .* Services In Oracle Services Network"]
+    regex  = true
+  }
 }
 
 # Create VCNs
@@ -139,7 +144,7 @@ resource "oci_core_route_table" "these" {
   dynamic "route_rules" {
     iterator = rule
     for_each = [for route_rule in each.value.route_rules : {
-      destination : route_rule.target != "sgw" ? route_rule.destination : "all-zrh-services-in-oracle-services-network" #TODO: select the proper 'cidr_block' related to the region, currently hard coded
+      destination : route_rule.target != "sgw" ? route_rule.destination : data.oci_core_services.all_services.services[0].cidr_block
       destination_type : route_rule.target != "sgw" ? route_rule.destination_type : "SERVICE_CIDR_BLOCK"
       network_entity_id : route_rule.target == "igw" ? lookup(oci_core_internet_gateway.these, "${each.value.vcn_name}-igw").id : route_rule.target == "ngw" ? lookup(oci_core_nat_gateway.these, "${each.value.vcn_name}-ngw").id : route_rule.target == "lpg" ? lookup(oci_core_local_peering_gateway.these, "${each.value.vcn_name}-lpg").id : route_rule.target == "sgw" ? lookup(oci_core_service_gateway.these, "${each.value.vcn_name}-sgw").id : route_rule.target == "drg" ? length(oci_core_drg.these) > 0 ? lookup(oci_core_drg.these, "${each.value.vcn_name}-drg").id : each.value.dynamic_routing_gateway.drg_id : ""
       description : route_rule.description
@@ -882,7 +887,7 @@ resource "oci_core_security_list" "these" {
       description      = sgw_target.value.description
       stateless        = false
       destination_type = "SERVICE_CIDR_BLOCK"
-      destination      = "all-zrh-services-in-oracle-services-network" #TODO: Get value from resource
+      destination      = data.oci_core_services.all_services.services[0].cidr_block
       protocol         = "6"
 
       tcp_options {
