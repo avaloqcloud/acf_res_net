@@ -9,6 +9,23 @@ variable "rfc1918_cidr" {
   default     = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
 }
 
+variable "defined_tags" {
+  type        = map(string)
+  default     = {
+    "CostTracking.avq-opr-resident"= "DEV",
+    "CostTracking.avq-gov-costaccount-build"= "DEV",
+    "CostTracking.avq-gov-costaccount-run"= "DEV",
+    "CostTracking.avq-gov-purchase-order"= "DEV",
+    "CostTracking.avq-opr-lfc-status"= "build",
+    "CostTracking.avq-gov-legal-entity"= "DEV",
+    "CostTracking.avq-opr-product"= "network",
+    "CostTracking.avq-opr-stage"= "dev",
+    "CostTracking.avq-opr-environment"= "1",
+  }
+  description = "Specify the tag for the OCI resources"
+}
+
+
 variable "anywhere_cidr" {
   type    = string
   default = "0.0.0.0/0"
