@@ -8,7 +8,7 @@ variable "dns_resolver_view" {
   type        = string
 }
 
-variable "resource_tags" {
+variable "defined_tags" {
   type        = map(string)
   default     = {
     "CostTracking.avq-opr-resident"= "DEV",

@@ -9,7 +9,7 @@ variable "rfc1918_cidr" {
   default     = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
 }
 
-variable "resource_tags" {
+variable "defined_tags" {
   type        = map(string)
   default     = {
     "CostTracking.avq-opr-resident"= "DEV",

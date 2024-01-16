@@ -4,6 +4,6 @@ module "vcn" {
   source            = "./vcn"
   vcns              = var.vcns
   dns_resolver_view = var.dns_resolver_view
-  resource_tags      = var.resource_tags
+  defined_tags      = var.defined_tags
 
   }
