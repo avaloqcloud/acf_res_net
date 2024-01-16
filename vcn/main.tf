@@ -45,6 +45,7 @@ resource "oci_core_vcn" "these" {
   display_name = each.value.display_name
   dns_label    = each.value.dns_label
   cidr_blocks  = each.value.cidr_blocks
+  defined_tags =  var.defined_tags
 }
 
 # Create subnets
