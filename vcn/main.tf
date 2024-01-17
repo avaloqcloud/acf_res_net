@@ -65,7 +65,6 @@ resource "oci_core_subnet" "these" {
   prohibit_public_ip_on_vnic = each.value.prohibit_public_ip_on_vnic
   #route_table_id             = oci_core_route_table.vcn_route_table.id
   security_list_ids = [lookup(oci_core_security_list.these, "${each.value.vcn_name}_${each.value.dns_label}").id]
-   #added tags
   defined_tags =  var.defined_tags
 }
 
@@ -79,7 +78,6 @@ resource "oci_core_internet_gateway" "these" {
   #Optional
   display_name = "${each.value.vcn_name}_internet_gateway"
   enabled      = each.value.internet_gateway.enabled
-   #added tags
   defined_tags =  var.defined_tags
 }
 
@@ -93,7 +91,6 @@ resource "oci_core_nat_gateway" "these" {
   #Optional
   display_name  = "${each.value.vcn_name}_nat_gateway"
   block_traffic = each.value.nat_gateway.block_traffic
-   #added tags
   defined_tags =  var.defined_tags
 }
 
@@ -109,7 +106,6 @@ resource "oci_core_service_gateway" "these" {
   }
   #Optional
   display_name = data.oci_core_services.all_services.services[0].name
-  #added tags
   defined_tags =  var.defined_tags      
                                          
 
@@ -123,7 +119,6 @@ resource "oci_core_drg" "these" {
   compartment_id = var.compartment_id
   #Optional
   display_name = "${each.value.vcn_name}_dynamic_routing_gateway"
-  #added tags
   defined_tags =  var.defined_tags                                             
 
 }
@@ -136,7 +131,6 @@ resource "oci_core_drg_attachment" "these" {
   drg_id       = length(oci_core_drg.these) > 0 ? lookup(oci_core_drg.these, "${each.value.vcn_name}-drg").id : each.value.dynamic_routing_gateway.drg_id
   vcn_id       = lookup(oci_core_vcn.these, each.value.vcn_name).id
   display_name = "${each.value.vcn_name}_drg_attachment"
-  #added tags
   defined_tags =  var.defined_tags                                             
 
 }
@@ -151,7 +145,6 @@ resource "oci_core_local_peering_gateway" "these" {
   #Optional
   display_name = "${each.value.vcn_name}_local_peering_gateway"
   peer_id = each.value.local_peering_gateway.peer_id == "" ? null : each.value.local_peering_gateway.peer_id
-  #added tags
   defined_tags =  var.defined_tags                                             
 
 }
@@ -179,7 +172,6 @@ resource "oci_core_route_table" "these" {
       description       = rule.value.description
     }
   }
-  #added tags
   defined_tags =  var.defined_tags                                             
 
 }
@@ -974,7 +966,6 @@ resource "oci_core_security_list" "these" {
       }
     }
   }
-  #added tags
   defined_tags =  var.defined_tags                                             
 }
 
@@ -987,7 +978,6 @@ resource "oci_dns_view" "these" {
   #Optional
   scope        = "PRIVATE"
   display_name = "${each.value.vcn_name}_dns_view"
-   #added tags
   defined_tags =  var.defined_tags
   
 }
