@@ -8,6 +8,22 @@ variable "dns_resolver_view" {
   type        = string
 }
 
+variable "defined_tags" {
+  type        = map(string)
+  default     = {
+    "CostTracking.avq-opr-resident"= "DEV",
+    "CostTracking.avq-gov-costaccount-build"= "DEV",
+    "CostTracking.avq-gov-costaccount-run"= "DEV",
+    "CostTracking.avq-gov-purchase-order"= "DEV",
+    "CostTracking.avq-opr-lfc-status"= "build",
+    "CostTracking.avq-gov-legal-entity"= "DEV",
+    "CostTracking.avq-opr-product"= "network",
+    "CostTracking.avq-opr-stage"= "dev",
+    "CostTracking.avq-opr-environment"= "1",
+  }
+  description = "Specify the tag for the OCI resources"
+}
+
 variable "vcns" {
   type = list(object({
     vcn_name     = string,

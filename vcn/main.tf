@@ -33,6 +33,7 @@ data "oci_core_services" "all_services" {
     values = ["All .* Services In Oracle Services Network"]
     regex  = true
   }
+  
 }
 
 # Create VCNs
@@ -45,6 +46,8 @@ resource "oci_core_vcn" "these" {
   display_name = each.value.display_name
   dns_label    = each.value.dns_label
   cidr_blocks  = each.value.cidr_blocks
+  defined_tags =  var.defined_tags
+  
 }
 
 # Create subnets
@@ -62,6 +65,7 @@ resource "oci_core_subnet" "these" {
   prohibit_public_ip_on_vnic = each.value.prohibit_public_ip_on_vnic
   #route_table_id             = oci_core_route_table.vcn_route_table.id
   security_list_ids = [lookup(oci_core_security_list.these, "${each.value.vcn_name}_${each.value.dns_label}").id]
+  defined_tags =  var.defined_tags
 }
 
 # Create Internet Gateway
@@ -74,6 +78,7 @@ resource "oci_core_internet_gateway" "these" {
   #Optional
   display_name = "${each.value.vcn_name}_internet_gateway"
   enabled      = each.value.internet_gateway.enabled
+  defined_tags =  var.defined_tags
 }
 
 # Create NAT Gateway
@@ -86,6 +91,7 @@ resource "oci_core_nat_gateway" "these" {
   #Optional
   display_name  = "${each.value.vcn_name}_nat_gateway"
   block_traffic = each.value.nat_gateway.block_traffic
+  defined_tags =  var.defined_tags
 }
 
 # Create Service Gateway
@@ -100,6 +106,9 @@ resource "oci_core_service_gateway" "these" {
   }
   #Optional
   display_name = data.oci_core_services.all_services.services[0].name
+  defined_tags =  var.defined_tags      
+                                         
+
 }
 
 # Create Dynamic Routing Gateway
@@ -110,6 +119,8 @@ resource "oci_core_drg" "these" {
   compartment_id = var.compartment_id
   #Optional
   display_name = "${each.value.vcn_name}_dynamic_routing_gateway"
+  defined_tags =  var.defined_tags                                             
+
 }
 
 # DRG attachment to VCN
@@ -120,6 +131,8 @@ resource "oci_core_drg_attachment" "these" {
   drg_id       = length(oci_core_drg.these) > 0 ? lookup(oci_core_drg.these, "${each.value.vcn_name}-drg").id : each.value.dynamic_routing_gateway.drg_id
   vcn_id       = lookup(oci_core_vcn.these, each.value.vcn_name).id
   display_name = "${each.value.vcn_name}_drg_attachment"
+  defined_tags =  var.defined_tags                                             
+
 }
 
 # Create Local Peering Gateway
@@ -132,6 +145,8 @@ resource "oci_core_local_peering_gateway" "these" {
   #Optional
   display_name = "${each.value.vcn_name}_local_peering_gateway"
   peer_id = each.value.local_peering_gateway.peer_id == "" ? null : each.value.local_peering_gateway.peer_id
+  defined_tags =  var.defined_tags                                             
+
 }
 
 ## Route tables
@@ -157,6 +172,8 @@ resource "oci_core_route_table" "these" {
       description       = rule.value.description
     }
   }
+  defined_tags =  var.defined_tags                                             
+
 }
 
 # Route Table Attachments
@@ -164,6 +181,8 @@ resource "oci_core_route_table_attachment" "these" {
   for_each       = { for subnet in local.subnets_in_vcn : "${subnet.vcn_name}_${subnet.dns_label}-route_table_attachment" => subnet if subnet.subnet_is_create == true }
   subnet_id      = lookup(oci_core_subnet.these, "${each.value.vcn_name}_${each.value.dns_label}").id
   route_table_id = lookup(oci_core_route_table.these, "${each.value.vcn_name}_${each.value.dns_label}-route_table").id
+  
+  
 }
 
 #### Security ####
@@ -197,6 +216,7 @@ resource "oci_core_security_list" "these" {
       stateless        = rule.value.stateless
       description      = rule.value.description
     }
+    
   }
 
   #  egress, proto: TCP  - src port, no dst port
@@ -229,6 +249,7 @@ resource "oci_core_security_list" "these" {
         }
       }
     }
+    
   }
 
   #  egress, proto: TCP  - no src port, dst port
@@ -945,6 +966,7 @@ resource "oci_core_security_list" "these" {
       }
     }
   }
+  defined_tags =  var.defined_tags                                             
 }
 
 #### DNS ####
@@ -956,6 +978,8 @@ resource "oci_dns_view" "these" {
   #Optional
   scope        = "PRIVATE"
   display_name = "${each.value.vcn_name}_dns_view"
+  defined_tags =  var.defined_tags
+  
 }
 
 resource "oci_dns_resolver" "these" {
@@ -1000,12 +1024,14 @@ resource "oci_dns_resolver" "these" {
 data "oci_dns_views" "these" {
   compartment_id = var.compartment_id
   scope          = "PRIVATE"
+  
 }
 
 # Provides the VCN DNS resolver association
 data "oci_core_vcn_dns_resolver_association" "dns_resolver_association" {
   for_each = { for subnet_dns_resolver in local.subnets_in_vcn : "${subnet_dns_resolver.vcn_name}_${subnet_dns_resolver.dns_label}" => subnet_dns_resolver }
   vcn_id   = lookup(oci_core_vcn.these, each.value.vcn_name).id
+  
 }
 
 resource "oci_dns_resolver_endpoint" "dns_forwarder" {
@@ -1036,4 +1062,5 @@ resource "oci_dns_resolver_endpoint" "dns_listener" {
   subnet_id     = lookup(oci_core_subnet.these, "${each.value.vcn_name}_${each.value.dns_label}").id
   #Optional
   listening_address = cidrhost(lookup(oci_core_subnet.these, "${each.value.vcn_name}_${each.value.dns_label}").cidr_block, "11")
+  
 }

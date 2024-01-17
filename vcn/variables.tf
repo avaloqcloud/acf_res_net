@@ -9,6 +9,13 @@ variable "rfc1918_cidr" {
   default     = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
 }
 
+variable "defined_tags" {
+  type        = map(string)
+  default     = null
+  description = "Specify the tag for the OCI resources"
+}
+
+
 variable "anywhere_cidr" {
   type    = string
   default = "0.0.0.0/0"
